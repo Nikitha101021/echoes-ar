@@ -8,7 +8,7 @@ jobs:
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
           gh release download xcode -R ${{ github.repository }} -p "*.zip"
-          unzip -q *.zip -d proj && chmod -R u+x proj
+          ls -la *.zip && ditto -x -k *.zip proj && chmod -R u+x proj
       - name: Build
         run: |
           cd proj/EchoesOfTime_AR_Xcode
