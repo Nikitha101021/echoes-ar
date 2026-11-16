@@ -1,0 +1,19 @@
+name: iOS
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Get project
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release download xcode -R ${{ github.repository }} -p "*.zip"
+          unzip -q *.zip -d proj && chmod -R u+x proj
+      - name: Build
+        run: |
+          cd proj/EchoesOfTime_AR_Xcode
+          xcodebuild -project Unity-iPhone.xcodeproj -scheme Unity-iPhone -configuration Release -sdk iphoneos -archivePath app.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          mkdir Payload && cp -R app.xcarchive/Products/Applications/*.app Payload/
+          zip -qr EchoesOfTime_AR.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with: { name: ipa, path: proj/EchoesOfTime_AR_Xcode/EchoesOfTime_AR.ipa }
